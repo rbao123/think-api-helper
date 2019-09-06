@@ -1,0 +1,25 @@
+{
+    "name": "fazi/think-api-doc",
+    "description": "基于ThinkPHP6 Api 文档自动生成 For ThinkPHP5-6 ",
+    "require": {
+        "topthink/think-view": "dev-master",
+        "topthink/framework": "dev-master"
+    },
+    "authors": [
+        {
+            "name": "发仔",
+            "email": "i@fazi.me",
+            "homepage": "https://www.fazi.me"
+        }
+    ],
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "fazi\\ApiDoc\\": "src"
+        },
+        "files": [
+            "helper.php"
+        ]
+    },
+    "minimum-stability": "dev"
+}
