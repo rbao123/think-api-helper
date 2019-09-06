@@ -18,7 +18,7 @@
             "fazi\\ApiDoc\\": "src"
         },
         "files": [
-            "helper.php"
+            "scr/helper.php"
         ]
     },
     "minimum-stability": "dev"
