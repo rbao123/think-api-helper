@@ -2,8 +2,8 @@
     "name": "fazi/think-api-doc",
     "description": "基于ThinkPHP6 Api 文档自动生成 For ThinkPHP5-6 ",
     "require": {
-        "topthink/think-view": "dev-master",
-        "topthink/framework": "dev-master"
+        "topthink/framework": "6.0.*-dev",
+        "topthink/think-view": "^1.0"
     },
     "authors": [
         {
