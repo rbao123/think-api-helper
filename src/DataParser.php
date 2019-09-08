@@ -12,6 +12,9 @@ class DataParser
 {
 	public $app;
 	
+	public function __construct()
+	{
+	}
 	/**
 	 * 读取命名空间列表
 	 * @return array

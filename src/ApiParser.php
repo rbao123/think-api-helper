@@ -12,6 +12,9 @@ class ApiParser
 {
 	public $app;
 	
+	public function __construct()
+	{
+	}
 	/**
 	 * 读取API地图
 	 * @return array
