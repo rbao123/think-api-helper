@@ -15,8 +15,7 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "Fazi\\ApiHelper\\": "src",
-            "app\\": "app"
+            "Fazi\\ApiHelper\\": "src"
         },
         "files": [
             "src/helper.php"
