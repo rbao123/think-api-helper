@@ -5,8 +5,8 @@
  */
 namespace Fazi\ApiHelper;
 
+use think\facade\Db;
 use think\facade\Env;
-use think\facade\Cache;
 
 class DataParser
 {
@@ -16,46 +16,46 @@ class DataParser
 	{
 	}
 	/**
-	 * 读取命名空间列表
+	 * 读取数据库表
+	 * @param array $option ['allow'=>'允许解析的表','deny'=>'禁止解析的表']
+	 * @throws
 	 * @return array
 	 */
-	public static function map()
+	public static function map( $option = [] )
 	{
 		//缓存
-		$tables = Cache::remember('manual_tabels',function(){
-			$dbserver   = Env::get('database.hostname');
-			$dbusername = Env::get('database.username');
-			$dbpassword = Env::get('database.password');
-			$database   = Env::get('database.database');
-			$con        = new \mysqli($dbserver, $dbusername, $dbpassword, $database);
-			$rs         = $con->query('show tables');
-			$tables     = [];
-			$tablesKey = 'Tables_in_' . $database;
-			foreach ($rs as $key => $value) {
-				$temp = [];
-				$sql = 'SELECT * FROM ';
-				$sql .= 'INFORMATION_SCHEMA.TABLES ';
-				$sql .= 'WHERE ';
-				$sql .= "table_name = '" . $value[ $tablesKey ] . "'  AND table_schema = '$database'";
-				$rs2 = $con->query($sql);
-				foreach ($rs2 as $key2 => $value2) {
-					$temp['func'] = $value2['TABLE_NAME'];
-					$temp['title'] = $value2['TABLE_COMMENT'] ?: $temp['func'];
-				}
-				$sql = 'SELECT * FROM ';
-				$sql .= 'INFORMATION_SCHEMA.COLUMNS ';
-				$sql .= 'WHERE ';
-				$sql .= "table_name = '" . $value[ $tablesKey ] . "' AND table_schema = '$database'";
-				$rs2 = $con->query($sql);
-				foreach ($rs2 as $key2 => $value2) {
-					$temp['COLUMN'][] = $value2;
-				}
-				$tables[$temp['func']] = $temp;
-			}
-			return $tables;
-		},3600*24*7);
+		$database   = Env::get('database.database');
+		$show   = Db::query('show tables');
 		
-		return $tables;
+		$dd     = [];
+		$tablesKey = 'Tables_in_' . $database;
+		foreach ($show as $key => $value) {
+			
+			$allow = $option['allow'] ?? [];
+			$deny = $option['deny'] ?? [];
+			
+			if( (!empty($allow) && !in_array($value[ $tablesKey ], $allow)) && in_array($value[ $tablesKey ], $deny)) {
+				continue;
+			}
+			//表信息
+			$table = Db::table('INFORMATION_SCHEMA.TABLES')
+				->where('table_name',$value[ $tablesKey ])
+				->where('table_schema', $database)
+				->field('table_name,table_comment')->find();
+			//字段信息
+			$columns = Db::table('INFORMATION_SCHEMA.COLUMNS')
+				->where('table_name',$value[ $tablesKey ])
+				->where('table_schema', $database)
+				->field('COLUMN_NAME AS name, COLUMN_DEFAULT AS default,IS_NULLABLE AS nullable,DATA_TYPE AS type,CHARACTER_OCTET_LENGTH AS max_len,NUMERIC_PRECISION AS precision,NUMERIC_SCALE AS scale,COLUMN_COMMENT AS comment')
+				->select();
+			foreach ($columns as $column) {
+				//字段属性
+				$table['columns'][] = $column;
+			}
+			$dd[$table['table_name']] = $table;
+		}
+		
+		return $dd;
 	}
 	
 }

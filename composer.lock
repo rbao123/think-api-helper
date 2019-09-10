@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d815710391911a40639c1bd0d5390943",
+    "content-hash": "18f69b5001459c03cd8ec3152dce37d4",
     "packages": [
         {
             "name": "league/flysystem",
@@ -436,12 +436,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/top-think/framework.git",
-                "reference": "ecd62899fade5fc269bf1d328fc6251ed21249c2"
+                "reference": "a5b60d693fecbc69b0ef1e7155a915179c249a02"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/top-think/framework/zipball/ecd62899fade5fc269bf1d328fc6251ed21249c2",
-                "reference": "ecd62899fade5fc269bf1d328fc6251ed21249c2",
+                "url": "https://api.github.com/repos/top-think/framework/zipball/a5b60d693fecbc69b0ef1e7155a915179c249a02",
+                "reference": "a5b60d693fecbc69b0ef1e7155a915179c249a02",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -496,7 +496,7 @@
                 "orm",
                 "thinkphp"
             ],
-            "time": "2019-09-04T14:24:34+00:00"
+            "time": "2019-09-09T13:43:08+00:00"
         },
         {
             "name": "topthink/think-helper",
@@ -549,12 +549,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/top-think/think-orm.git",
-                "reference": "49c18c9ba68403451031f6afac9c6091cb071115"
+                "reference": "e3746277f9f8972f21c3adfad2f2014b75335495"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/top-think/think-orm/zipball/49c18c9ba68403451031f6afac9c6091cb071115",
-                "reference": "49c18c9ba68403451031f6afac9c6091cb071115",
+                "url": "https://api.github.com/repos/top-think/think-orm/zipball/e3746277f9f8972f21c3adfad2f2014b75335495",
+                "reference": "e3746277f9f8972f21c3adfad2f2014b75335495",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -591,7 +591,7 @@
                 "database",
                 "orm"
             ],
-            "time": "2019-09-02T06:01:06+00:00"
+            "time": "2019-09-09T23:40:43+00:00"
         },
         {
             "name": "topthink/think-template",
@@ -695,6 +695,8 @@
     },
     "prefer-stable": false,
     "prefer-lowest": false,
-    "platform": [],
+    "platform": {
+        "php": ">=7.1"
+    },
     "platform-dev": []
 }

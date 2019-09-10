@@ -1,6 +1,11 @@
 {
     "name": "fazi/think-api-helper",
     "description": "Api文档、数据字典自动解析与生成",
+    "keywords": [
+        "thinkphp",
+        "api document",
+        "data dictionary"
+    ],
     "require": {
         "php" : ">=7.1",
         "topthink/framework": "6.0.*-dev"

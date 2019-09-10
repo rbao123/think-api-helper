@@ -17,13 +17,14 @@ class ApiParser
 	}
 	/**
 	 * 读取API地图
+	 * @param array $option ['allow'=>'允许的应用','deny'=>'禁止解析的应用']
 	 * @return array
 	 */
-	public static function map()
+	public static function map( $option = [] )
 	{
 		$class_tags = [];
 		//解析命名空间
-		$apps = self::getApps();
+		$apps = self::getApps( $option );
 		
 		//遍历命名空间
 		if($apps) {
@@ -66,9 +67,10 @@ class ApiParser
 	
 	/**
 	 * 读取命名空间列表
+	 * @param array $option
 	 * @return array
 	 */
-	public static function getApps()
+	public static function getApps( $option = [] )
 	{
 		$app = (new App);
 		$app_namespace = $app->getNamespace();
@@ -96,6 +98,12 @@ class ApiParser
 				$app_name = 'only';
 				if($is_multi) {
 					$current_namespace[] = $uri[] = $app_name = basename(dirname($dir));#应用名
+					$allow = $option['allow'] ?? [];
+					$deny = $option['deny'] ?? [];
+					
+					if((!empty($allow) && !in_array($app_name, $allow)) || in_array($app_name,$deny)) {
+						continue;
+					}
 				}
 				$current_namespace[] = 'controller';
 				//遍历
