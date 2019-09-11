@@ -23,9 +23,9 @@ class DataParser
 	 */
 	public static function map( $option = [] )
 	{
-		//缓存
-		$database   = Env::get('database.database');
-		$show   = Db::query('show tables');
+		//数据库
+		$database   = $option['database'] ?? Env::get('database.database');
+		$show   = Db::query('SHOW TABLES FROM '.$database);
 		
 		$dd     = [];
 		$tablesKey = 'Tables_in_' . $database;
@@ -46,7 +46,7 @@ class DataParser
 			$columns = Db::table('INFORMATION_SCHEMA.COLUMNS')
 				->where('table_name',$value[ $tablesKey ])
 				->where('table_schema', $database)
-				->field('COLUMN_NAME AS name, COLUMN_DEFAULT AS default,IS_NULLABLE AS nullable,DATA_TYPE AS type,CHARACTER_OCTET_LENGTH AS max_len,NUMERIC_PRECISION AS precision,NUMERIC_SCALE AS scale,COLUMN_COMMENT AS comment')
+				->field('COLUMN_NAME AS name, COLUMN_DEFAULT AS default_value,IS_NULLABLE AS nullable,DATA_TYPE AS type,CHARACTER_OCTET_LENGTH AS max_len,NUMERIC_PRECISION AS numeric_precision,NUMERIC_SCALE AS numeric_scale,COLUMN_COMMENT AS comment')
 				->select();
 			foreach ($columns as $column) {
 				//字段属性
