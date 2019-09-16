@@ -46,8 +46,9 @@ class ApiParser
 							$methods = $reflection->getMethods();
 							foreach ($methods AS $method) {
 								$method_tag = self::getCommentTag($method->getDocComment());
+								if(empty($method_tag['api']))continue;
 								$method_name = $method->getName();
-								$method_tag['uri'] = $uri . '/' . $method_name;
+								$method_tag['uri'] = str_replace('\\','/', $uri) . '/' . $method_name;
 								$class_tag['methods'][$method_name] = $method_tag;
 							}
 							
@@ -112,20 +113,20 @@ class ApiParser
 					if($top->isDot()) continue;
 					//二级目录再遍历
 					
-					$current_namespace[] = $uri[] = $top->getBasename('.php');
+					$current_class = $top->getBasename('.php');
 					if($top->isDir()) {
 						$second_layer = new DirectoryIterator($top->getRealPath());
 						foreach ( $second_layer AS $second ) {
 							if($second->isDot()||$second->isDir()) continue;
 							$namespaces[$app_name][] = [
-								implode('\\',$current_namespace).'\\'.$second->getBasename('.php'),
+								implode('\\',$current_namespace).'\\'.$current_class.'\\'.$second->getBasename('.php'),
 								implode('\\',$uri).'.'.$second->getBasename('.php'),
 							];
 						}
 					} else {
 						$namespaces[$app_name][] = [
-							implode('\\',$current_namespace),
-							implode('\\',$uri),
+							implode('\\',$current_namespace).'\\'.$current_class,
+							implode('\\',$uri).'\\'.$current_class,
 						];
 					}
 				}
@@ -178,7 +179,5 @@ class ApiParser
 		
 		return $tags;
 	}
-	
-	
 	
 }
