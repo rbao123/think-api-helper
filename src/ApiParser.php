@@ -6,12 +6,10 @@
 namespace Fazi\ApiHelper;
 
 use DirectoryIterator;
-use think\App;
+use think\facade\App;
 
 class ApiParser
 {
-	public $app;
-	
 	public function __construct()
 	{
 	}
@@ -73,9 +71,8 @@ class ApiParser
 	 */
 	public static function getApps( $option = [] )
 	{
-		$app = (new App);
-		$app_namespace = $app->getNamespace();
-		$app_path  = $app->getBasePath();
+		$app_namespace = App::getNamespace();
+		$app_path  = App::getBasePath();
 		
 		$namespaces = [];
 		$is_multi = false;
