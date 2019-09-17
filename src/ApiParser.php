@@ -6,10 +6,16 @@
 namespace Fazi\ApiHelper;
 
 use DirectoryIterator;
+use ReflectionClass;
+use ReflectionException;
 use think\facade\App;
+use think\facade\Cache;
+use think\facade\Config;
 
 class ApiParser
 {
+	public $app;
+	
 	public function __construct()
 	{
 	}
@@ -32,13 +38,12 @@ class ApiParser
 					
 					$class = $namespace[0];
 					$uri = $namespace[1];
-					
 					if(class_exists($class)) {
 						try {
 							//解析文件
-							$reflection = new \ReflectionClass($class);
+							$reflection = new ReflectionClass($class);
 							$class_comment = $reflection->getDocComment();
-							$class_tag = self::getCommentTag($class_comment);
+							$class_tag = self::getCommentTag($class_comment,$option);
 							$class_tag['uri'] = $uri;
 							//方法
 							$methods = $reflection->getMethods();
@@ -52,7 +57,7 @@ class ApiParser
 							
 							$class_tags[$group][] = $class_tag;
 							
-						} catch (\ReflectionException $e) {
+						} catch (ReflectionException $e) {
 						}
 						
 					}
@@ -71,8 +76,8 @@ class ApiParser
 	 */
 	public static function getApps( $option = [] )
 	{
-		$app_namespace = App::getNamespace();
 		$app_path  = App::getBasePath();
+		$app_namespace = Config::get('app.app_namespace','app')?:'app';
 		
 		$namespaces = [];
 		$is_multi = false;
@@ -89,8 +94,10 @@ class ApiParser
 			foreach($dirs AS $dir) {
 				
 				$current_namespace = $uri = [];
+				
 				//当前命名空间
 				$current_namespace[] = $app_namespace;
+//				$current_namespace[] = explode( '/',str_replace($app_path,'', $dir))[0];
 				
 				//多应用
 				$app_name = 'only';
@@ -136,12 +143,24 @@ class ApiParser
 	/**
 	 * 分析注释的TAG
 	 * @param $comment
+	 * @throws
 	 * @return array
 	 */
-	protected static function getCommentTag( $comment )
+	protected static function getCommentTag( $comment, $option=[] )
 	{
 		$comment = preg_replace('/[ ]+/', ' ', $comment);
 		preg_match_all('/\*[\s+]?@(.*?)\s(.*?)[\n|\r]/is', $comment, $matches);
+		
+		//dd
+		if(!empty($option['dd'])) {
+			
+			$dd = Cache::remember('maunal:dd',function(){
+				$dd = DataParser::map();
+				return $dd;
+			});
+			$ignore = ['id','delete_time','create_time','update_time'];
+		}
+		
 		
 		$tags = [];
 		if(!empty($matches[1]) && !in_array('ignore',$matches[1])) {
@@ -170,6 +189,34 @@ class ApiParser
 							'desc' => $line[2] ?? '-',
 							'must' => $line[3] ?? 0,
 						];
+						break;
+					case 'table':
+						if($line[0]) {
+							$tags[$tag_name][] = [
+								'name' => $line[0] ?? '',
+								'field' => $line[1] ?? '*',
+							];
+						}
+					
+				}
+			}
+			//TABLE
+			if(!empty($tags['table']) && !empty($option['dd'])) {
+				foreach($tags['table'] AS $table) {
+					$columns = $dd[$table['name']]['columns'];
+					if($columns) {
+						foreach ($columns AS $column) {
+							if(!in_array($column['name'], $ignore)) {
+								$tags['param'][] = [
+									'name' => $column['name'],
+									'type' => $column['type'],
+									'desc' => $column['comment'],
+									'must' => !$column['nullable'] && !$column['default_value'] ? 1 : 0,
+								];
+							}
+							
+						}
+					}
 				}
 			}
 		}
