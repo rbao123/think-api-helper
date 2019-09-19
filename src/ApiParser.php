@@ -43,12 +43,12 @@ class ApiParser
 							//解析文件
 							$reflection = new ReflectionClass($class);
 							$class_comment = $reflection->getDocComment();
-							$class_tag = self::getCommentTag($class_comment,$option);
+							$class_tag = self::getCommentTag($class_comment);
 							$class_tag['uri'] = $uri;
 							//方法
 							$methods = $reflection->getMethods();
 							foreach ($methods AS $method) {
-								$method_tag = self::getCommentTag($method->getDocComment());
+								$method_tag = self::getCommentTag($method->getDocComment(), $option);
 								if(empty($method_tag['api']))continue;
 								$method_name = $method->getName();
 								$method_tag['uri'] = str_replace('\\','/', $uri) . '/' . $method_name;
