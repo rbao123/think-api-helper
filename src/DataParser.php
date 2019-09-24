@@ -34,7 +34,7 @@ class DataParser
 			$allow = $option['allow'] ?? [];
 			$deny = $option['deny'] ?? [];
 			
-			if( (!empty($allow) && !in_array($value[ $tablesKey ], $allow)) && in_array($value[ $tablesKey ], $deny)) {
+			if( (!empty($allow) && !in_array($value[ $tablesKey ], $allow)) || in_array($value[ $tablesKey ], $deny)) {
 				continue;
 			}
 			//表信息

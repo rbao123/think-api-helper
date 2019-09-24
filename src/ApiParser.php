@@ -11,6 +11,7 @@ use ReflectionException;
 use think\facade\App;
 use think\facade\Cache;
 use think\facade\Config;
+use think\helper\Str;
 
 class ApiParser
 {
@@ -44,12 +45,13 @@ class ApiParser
 							$reflection = new ReflectionClass($class);
 							$class_comment = $reflection->getDocComment();
 							$class_tag = self::getCommentTag($class_comment);
+							if(!empty($class_tag['ignore']))continue;
 							$class_tag['uri'] = $uri;
 							//方法
 							$methods = $reflection->getMethods();
 							foreach ($methods AS $method) {
 								$method_tag = self::getCommentTag($method->getDocComment(), $option);
-								if(empty($method_tag['api']))continue;
+								if(empty($method_tag['api']) || !empty($method_tag['ignore']))continue;
 								$method_name = $method->getName();
 								$method_tag['uri'] = str_replace('\\','/', $uri) . '/' . $method_name;
 								$class_tag['methods'][$method_name] = $method_tag;
@@ -97,7 +99,6 @@ class ApiParser
 				
 				//当前命名空间
 				$current_namespace[] = $app_namespace;
-//				$current_namespace[] = explode( '/',str_replace($app_path,'', $dir))[0];
 				
 				//多应用
 				$app_name = 'only';
@@ -119,6 +120,7 @@ class ApiParser
 					
 					$current_class = $top->getBasename('.php');
 					if($top->isDir()) {
+						$uri[] = $current_class;#控制器二级
 						$second_layer = new DirectoryIterator($top->getRealPath());
 						foreach ( $second_layer AS $second ) {
 							if($second->isDot()||$second->isDir()) continue;
@@ -150,7 +152,6 @@ class ApiParser
 	{
 		$comment = preg_replace('/[ ]+/', ' ', $comment);
 		preg_match_all('/\*[\s+]?@(.*?)\s(.*?)[\n|\r]/is', $comment, $matches);
-		
 		//dd
 		if(!empty($option['dd'])) {
 			
@@ -158,12 +159,11 @@ class ApiParser
 				$dd = DataParser::map();
 				return $dd;
 			});
-			$ignore = ['id','delete_time','create_time','update_time'];
+			$ignore = ['id','uid','delete_time','create_time','update_time'];
 		}
 		
-		
 		$tags = [];
-		if(!empty($matches[1]) && !in_array('ignore',$matches[1])) {
+		if( !empty($matches[1]) ) {
 			foreach ($matches[1] AS $i => $tag_name) {
 				$line = explode(' ',$matches[2][$i] ?? '');
 				switch ($tag_name) {
@@ -197,13 +197,25 @@ class ApiParser
 								'field' => $line[1] ?? '*',
 							];
 						}
+						break;
+					case 'ignore':
+						$tags[$tag_name] = 1;
+						break;
 					
 				}
 			}
 			//TABLE
 			if(!empty($tags['table']) && !empty($option['dd'])) {
 				foreach($tags['table'] AS $table) {
-					$columns = $dd[$table['name']]['columns'];
+					//判断是否中
+					if(strpos($table['name'],'.') !== false) {
+						list($database,$table_name) = explode('.',$table['name']);
+						$dd = self::getDD($database, $table_name);
+						$columns = !empty($dd[$table_name]) ? $dd[$table_name]['columns'] : [];
+					} else {
+						$table_name = $table['name'];
+					}
+					$columns = !empty($dd[$table_name]) ? $dd[$table_name]['columns'] : [];
 					if($columns) {
 						foreach ($columns AS $column) {
 							if(!in_array($column['name'], $ignore)) {
@@ -222,6 +234,14 @@ class ApiParser
 		}
 		
 		return $tags;
+	}
+	
+	public static function getDD( $database = '', $table_name = '' )
+	{
+		$cache_name = $database ? 'maunal:dd:'.$database : 'maunal:dd';
+//		$dd = Cache::remember($cache_name,function() use($database){
+		$dd = DataParser::map(['database'=>$database,'allow' => [$table_name]]);
+		return $dd;
 	}
 	
 }
