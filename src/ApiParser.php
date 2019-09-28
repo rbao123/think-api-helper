@@ -190,6 +190,12 @@ class ApiParser
 							'must' => $line[3] ?? 0,
 						];
 						break;
+					case 'time':
+						$tags[$tag_name][] = [
+							'time' => $line[0] ?? '-',
+							'desc' => $line[1] ?? '-',
+						];
+						break;
 					case 'table':
 						if($line[0]) {
 							$tags[$tag_name][] = [
