@@ -1,5 +1,5 @@
 {
-    "name": "fazi/think-api-helper",
+    "name": "rbao123/think-api-helper",
     "description": "Api文档、数据字典自动解析与生成",
     "keywords": [
         "thinkphp",
@@ -12,9 +12,8 @@
     },
     "authors": [
         {
-            "name": "发仔",
-            "email": "i@fazi.me",
-            "homepage": "https://www.fazi.me"
+            "name": "rbao123",
+            "email": "wrbao@foxmail.com"
         }
     ],
     "license": "MIT",
