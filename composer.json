@@ -19,7 +19,7 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "Fazi\\ApiHelper\\": "src"
+            "bao\\ApiHelper\\": "src"
         },
         "files": [
             "src/helper.php"

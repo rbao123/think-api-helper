@@ -1,6 +1,6 @@
 <?php
 
-namespace ApiHelper;
+namespace bao\ApiHelper;
 
 use DirectoryIterator;
 use ReflectionClass;

@@ -1,6 +1,6 @@
 <?php
 
-namespace ApiHelper;
+namespace bao\ApiHelper;
 
 use think\facade\Db;
 use think\facade\Env;
