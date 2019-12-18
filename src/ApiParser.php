@@ -188,6 +188,7 @@ class ApiParser
 							'name' => $line[1] ?? '-',
 							'desc' => $line[2] ?? '-',
 							'must' => $line[3] ?? 0,
+                            'example' => $line[4] ?? '-',
 						];
 						break;
 					case 'time':
