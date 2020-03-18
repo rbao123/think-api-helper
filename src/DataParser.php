@@ -39,7 +39,7 @@ class DataParser
             $table = Db::table('INFORMATION_SCHEMA.TABLES')
                 ->where('table_name', $value[$tablesKey])
                 ->where('table_schema', $database)
-                ->field('table_name,table_comment')->find();
+                ->field('TABLE_NAME as table_name,TABLE_COMMENT as table_comment')->find();
             //字段信息
             $columns = Db::table('INFORMATION_SCHEMA.COLUMNS')
                 ->where('table_name', $value[$tablesKey])
