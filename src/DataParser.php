@@ -49,7 +49,12 @@ class DataParser
 				//字段属性
 				$table['columns'][] = $column;
 			}
-			$dd[$table['table_name']] = $table;
+            try {
+                $dd[$table['table_name']] = $table;
+            }catch (\Exception $e){
+			    dump($value);
+			    halt($table);   
+            }
 		}
 		
 		return $dd;
